@@ -181,7 +181,7 @@ const Formulario = () => {
     return (
         <>
             <div className='col-4'>
-                <h4 style={{position: 'fixed', top: '50%', right: 200}}>
+                <h4 class="Btn" style={{position: 'fixed', top: '50%', right: 200}}>
                     <button onClick={handleModal}> Abrir formulario</button>
                 </h4>
             </div>
