@@ -1,10 +1,9 @@
 import './App.css';
-import Formulario from './components/Formulario';
+import Agenda from './components/Agenda';
 
 function App() {
   return (
-    
-    <Formulario/>
+    <Agenda />
   );
 }
 

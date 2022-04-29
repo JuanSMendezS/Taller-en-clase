@@ -12,6 +12,8 @@ const Formulario = () => {
     const [listaContacto, setListaContactos] = React.useState([])
     const [modoEdicion, setModoEdicion] = React.useState(false)
     const [error, setError] = React.useState(null)
+    const imagen = 'https://picsum.photos/200'
+    const texto_alt = 'Imagen de origen de Picsum'
 
     React.useEffect(() => {
         const obtenerDatos = async () => {
@@ -38,30 +40,30 @@ const Formulario = () => {
         e.preventDefault()
 
         if (!nombre.trim()) {
-            setError('Digite le juego')
+            setError('Agregue el nombre')
             return
         }
         if (!descripcion.trim()) {
-            setError('Agregue una Descripción del juego')
+            setError('Agregue una Descripción de la persona')
             return
         }
         if (!apellido.trim()) {
-            setError('Agregue la categoria del juego')
+            setError('Agregue el apellido')
             return
         }
         if (!organizacion.trim()) {
-            setError('Coloque la cantidad de horas dedicadas al juego')
+            setError('Agregue la organización')
             return
         }
         if (!relacion.trim()) {
-            setError('Especifique el nombre del jugador')
+            setError('Especifique la relación')
             return
         }
 
         try {
             const dataBase = firebase.firestore();
             const nuevoRegistro = {
-                nombre: nombre,
+                Nombre: nombre,
                 Apellido: apellido,
                 Descripcion: descripcion,
                 Organizacion: organizacion,
@@ -108,7 +110,7 @@ const Formulario = () => {
             const dataBase = firebase.firestore();
             await dataBase.collection('listaContacto').doc(id).update({
                 id: id,
-                nombre: nombre,
+                Nombre: nombre,
                 Apellido: apellido,
                 Descripcion: descripcion,
                 Organizacion: organizacion,
@@ -118,7 +120,7 @@ const Formulario = () => {
             const registroEditado = listaContacto.map(
                 item => item.id === id ? {
                     id: id,
-                    nombre: nombre,
+                    Nombre: nombre,
                     Apellido: apellido,
                     Descripcion: descripcion,
                     Organizacion: organizacion,
@@ -182,6 +184,7 @@ const Formulario = () => {
                                         {item.Descripcion}<hr />
                                         {item.Organizacion}<hr />
                                         {item.Relacion}<hr />
+                                        <img src={imagen} alt={texto_alt} />
                                     </span>
                                     <hr />
                                     <button className='btn btn-danger btn-sm float-end mx-2' onClick={() => eliminar(item.id)}>
