@@ -15,10 +15,22 @@ const Formulario = () => {
     const [modoEdicion, setModoEdicion] = React.useState(false)
     const [error, setError] = React.useState(null)
     const [showModal, setShowModal] = React.useState(false);
-
-
-    const imagen = 'https://picsum.photos/100'
+    const [imag, setImag] = React.useState("");
+    //const imagen = 'https://picsum.photos/100'
     const texto_alt = 'Imagen de origen de Picsum'
+
+  
+        const Imagen = async()=>{
+            try {
+                const res = await fetch('https://picsum.photos/100');
+                console.log(res.url)
+                return await res.url
+            } catch (error) {
+                console.error(error);
+            }
+        }
+       
+  
 
     React.useEffect(() => {
         const obtenerDatos = async () => {
@@ -41,8 +53,8 @@ const Formulario = () => {
         obtenerDatos()
     }, [])
 
-    const guardarContacto = async (e) => {
-        e.preventDefault()
+    const guardarContacto = async () => {
+        
 
         if (!nombre.trim()) {
             setError('Agregue el nombre')
@@ -66,13 +78,15 @@ const Formulario = () => {
         }
 
         try {
-            const dataBase = firebase.firestore();
+            const imag = await Imagen();
+            const dataBase = await firebase.firestore();
             const nuevoRegistro = {
                 Nombre: nombre,
                 Apellido: apellido,
                 NumeroTel: numeroTel,
                 Organizacion: organizacion,
-                Relacion: relacion
+                Relacion: relacion,
+                imag
             };
             const data = await dataBase.collection('listaContacto').add(nuevoRegistro)
             console.log(data)
@@ -82,11 +96,12 @@ const Formulario = () => {
                 Apellido: apellido,
                 NumeroTel: numeroTel,
                 Organizacion: organizacion,
-                Relacion: relacion
+                Relacion: relacion,
+                imag
             }
             ])
 
-            e.target.reset()
+            
             setNombre('')
             setApellido('')
             setNumeroTel('')
@@ -106,10 +121,11 @@ const Formulario = () => {
         setRelacion(item.Relacion)
         setModoEdicion(true)
         setId(item.id)
+        setImag(item.imag)
     }
 
-    const editarContacto = async e => {
-        e.preventDefault()
+    const editarContacto = async (e) => {
+        e.preventDefault();
 
         try {
             const dataBase = firebase.firestore();
@@ -119,7 +135,8 @@ const Formulario = () => {
                 Apellido: apellido,
                 NumeroTel: numeroTel,
                 Organizacion: organizacion,
-                Relacion: relacion
+                Relacion: relacion,
+                imag
             })
 
             const registroEditado = listaContacto.map(
@@ -129,13 +146,14 @@ const Formulario = () => {
                     Apellido: apellido,
                     NumeroTel: numeroTel,
                     Organizacion: organizacion,
-                    Relacion: relacion
+                    Relacion: relacion,
+                    imag
                 } : item
             )
 
             setListaContactos(registroEditado)
 
-            e.target.reset()
+            
             setNombre('')
             setApellido('')
             setNumeroTel('')
@@ -144,7 +162,7 @@ const Formulario = () => {
             setModoEdicion(false)
             setError(null)
             handleModal()
-
+            e.target.reset();
         } catch (error) {
             console.log(error)
         }
@@ -181,7 +199,7 @@ const Formulario = () => {
     return (
         <>
             <div className='col-4'>
-                <h4 class="Btn" style={{position: 'fixed', top: '50%', right: 200}}>
+                <h4 className="Btn" style={{position: 'fixed', top: '50%', right: 200}}>
                     <button onClick={handleModal}> Abrir formulario</button>
                 </h4>
             </div>
@@ -192,7 +210,7 @@ const Formulario = () => {
                     }
                 </Modal.Header>
                 <Modal.Body>
-                    <form onSubmit={modoEdicion ? editarContacto : guardarContacto}>
+                    <form onSubmit={modoEdicion ?? editarContacto }>
                         {
                             error ? <span className='text-danger'>{error}</span> : null
                         }
@@ -248,7 +266,7 @@ const Formulario = () => {
                             :
                             <button
                                 className='btn btn-primary btn-block'
-                                type='submit'>
+                                onClick={guardarContacto}>
                                 Agregar
                             </button>
                     }
@@ -263,14 +281,15 @@ const Formulario = () => {
                         <ul className='list-group'>
                             {
                                 listaContacto.map((item) => (
-                                    <li className='list-group-item' key={item.id}>
+                                    
+                                        <li className='list-group-item' key={item.id}>
                                         <span className='lead'>
                                             {item.Nombre}<hr />
                                             {item.Apellido}<hr />
                                             {item.NumeroTel}<hr />
                                             {item.Organizacion}<hr />
                                             {item.Relacion}<hr />
-                                            <img src={imagen} alt={texto_alt} />
+                                            <img src={item.imag} alt={texto_alt} />
                                         </span>
                                         <hr />
                                         <button className='btn btn-danger btn-sm float-end mx-2' onClick={() => eliminar(item.id)}>
@@ -279,7 +298,8 @@ const Formulario = () => {
                                         <button className='btn btn-warning btn-sm float-end' onClick={() => editar(item)}>
                                             Editar
                                         </button>
-                                    </li>
+                                        </li>
+                                    
                                 ))
                             }
                         </ul>
